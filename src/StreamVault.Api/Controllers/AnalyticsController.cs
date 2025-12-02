@@ -7,7 +7,7 @@ namespace StreamVault.Api.Controllers;
 
 [ApiController]
 [Route("api/analytics")]
-// [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Moderator)] 
+[Authorize(Roles = "Admin,Moderator")]
 public class AnalyticsController(IStatisticsRepository statisticsRepository) : ControllerBase
 {
     [HttpGet("summary")]
