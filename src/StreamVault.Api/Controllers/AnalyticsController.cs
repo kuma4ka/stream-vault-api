@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StreamVault.Application.Interfaces.Repositories;
+using StreamVault.Domain.Constants;
 
 namespace StreamVault.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class StatisticsController(IStatisticsRepository statisticsRepository) : ControllerBase
+[Route("api/analytics")]
+// [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Moderator)] 
+public class AnalyticsController(IStatisticsRepository statisticsRepository) : ControllerBase
 {
-    [HttpGet("general")]
-    public async Task<IActionResult> GetGeneralStats()
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetSummary()
     {
         var users = await statisticsRepository.GetUserCountAsync();
         var maxViews = await statisticsRepository.GetMaxViewCountAsync();
@@ -16,21 +19,21 @@ public class StatisticsController(IStatisticsRepository statisticsRepository) : 
 
         return Ok(new 
         { 
-            UserCount = users, 
-            MaxBroadcastViews = maxViews, 
-            ViewCountVariance = variance 
+            TotalUsers = users, 
+            PeakBroadcastViews = maxViews, 
+            ViewsVariance = variance 
         });
     }
 
-    [HttpGet("quartiles")]
-    public async Task<IActionResult> GetQuartiles()
+    [HttpGet("views-distribution")]
+    public async Task<IActionResult> GetViewsDistribution()
     {
         var quartiles = await statisticsRepository.GetViewCountQuartilesAsync();
         return Ok(quartiles);
     }
 
-    [HttpGet("categories/top")]
-    public async Task<IActionResult> GetTopCategories()
+    [HttpGet("category-rankings")]
+    public async Task<IActionResult> GetCategoryRankings()
     {
         var stats = await statisticsRepository.GetMaxViewsPerCategoryAsync();
         return Ok(stats);
