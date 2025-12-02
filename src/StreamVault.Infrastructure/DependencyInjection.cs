@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StreamVault.Application.Interfaces.Repositories; // Додано
+using StreamVault.Application.Interfaces.Repositories;
+using StreamVault.Application.Interfaces.Data;
 using StreamVault.Domain.Entities;
 using StreamVault.Infrastructure.Data;
 using StreamVault.Infrastructure.Repositories;
@@ -24,6 +25,8 @@ public static class DependencyInjection
 
         services.AddScoped<IBroadcastRepository, BroadcastRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+        services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 
         return services;
     }
