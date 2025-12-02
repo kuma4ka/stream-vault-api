@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StreamVault.Application.DTOs;
 using StreamVault.Application.Interfaces.Services;
 
@@ -6,12 +8,18 @@ namespace StreamVault.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class BroadcastsController(IBroadcastService broadcastService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateBroadcast([FromBody] CreateBroadcastDto request)
     {
-        var creatorId = "test-streamer-id";
+        var creatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(creatorId))
+        {
+            return Unauthorized("User ID claim is missing.");
+        }
 
         try
         {
@@ -30,6 +38,7 @@ public class BroadcastsController(IBroadcastService broadcastService) : Controll
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public IActionResult GetById(Guid id)
     {
         return Ok(new { Message = $"Placeholder for Broadcast {id}" });
